@@ -11,7 +11,6 @@ const GAME_H = 240;
 const LIGHT_SOURCE = {
   x: 0,
   y: 0,
-  sprite: "",
   brightness: 1,
 };
 let target_alpha = 0.04;
@@ -40,7 +39,7 @@ const PLAYER = {
   y: GAME_H - 48,
   dx: 0,
   dy: 0,
-  w: 32,
+  w: 16,
   h: 32,
   color: MID_PURPLE,
   speed: 4,
@@ -99,9 +98,9 @@ const GHOST = {
   dy: 0,
   prev_x: 0,
   prev_y: 0,
-  w: 32,
+  w: 16,
   h: 32,
-  color: "#ffffff",
+  color: GREEN,
   speed: 2,
   type: "ghost",
   positions: [],
@@ -194,20 +193,10 @@ down_left_trunk.y = down_left_tree.y + down_left_tree.h;
 
 // PLAYERS
 
-let fire_yellow = JSON.parse(JSON.stringify(FIRE));
-fire_yellow.color = YELLOW;
-fire_yellow.w = 16;
-fire_yellow.h = 16;
-fire_yellow.x = FIRE.x + FIRE.w / 2 - fire_yellow.w / 2;
-fire_yellow.y = FIRE.y + FIRE.h / 2 - fire_yellow.h / 2;
-let fire_red = JSON.parse(JSON.stringify(FIRE));
-
 let player = JSON.parse(JSON.stringify(PLAYER));
 let GAME_OBJECTS = [
   player,
   BLOCK,
-  fire_red,
-  fire_yellow,
   up_right_tree,
   up_left_tree,
   down_right_tree,
@@ -219,13 +208,13 @@ let GAME_OBJECTS = [
 ];
 
 // LIGHTS
-const LIGHT = new light(
-  new vector(FIRE.x, FIRE.y),
-  300,
-  360,
+const FLASHLIGHT = new light(
+  new vector(PLAYER.x + PLAYER.w / 2, PLAYER.y),
+  100,
+  60,
   "rgba(255,255,60,0.1)"
 );
-lights.push(LIGHT);
+lights.push(FLASHLIGHT);
 
 // UTILS
 const shoot = (shooter, projectile) => {
@@ -533,12 +522,9 @@ const resetGame = () => {
   GAME_OBJECTS.length = 0;
 
   player = JSON.parse(JSON.stringify(PLAYER));
-  fire_red = JSON.parse(JSON.stringify(FIRE));
   GAME_OBJECTS = [
     player,
     BLOCK,
-    fire_red,
-    fire_yellow,
     up_right_tree,
     up_left_tree,
     down_right_tree,
@@ -548,6 +534,9 @@ const resetGame = () => {
     down_right_trunk,
     down_left_trunk,
   ];
+
+  FLASHLIGHT.position.x = player.x + player.w / 2;
+  FLASHLIGHT.position.y = player.y;
 
   game_state = STATES.start;
   start_timer = 4;
@@ -638,9 +627,14 @@ const update = (dt) => {
 
       // player hitboxes
       player.heart.w = player.w / 4;
-
       player.heart.x = player.x + player.w / 2 - player.heart.w / 2;
       player.heart.y = player.y + player.h / 2 - player.heart.h / 2;
+
+      // track flashlight with player
+      LIGHT_SOURCE.x = player.heart.x + player.heart.w / 2;
+      LIGHT_SOURCE.y = player.heart.y + player.heart.h / 2;
+      FLASHLIGHT.position.x = player.x + player.w / 2;
+      FLASHLIGHT.position.y = player.y;
 
       // collision against blocks
       blocks.forEach((block) => {
@@ -695,24 +689,7 @@ const update = (dt) => {
         game_state = STATES.game_over;
         game_over_text = "You got spooked!";
       }
-
-      if (collisionDetected(fire_red, ghost)) {
-        score += 10;
-        ghost.remove = true;
-      }
     });
-
-    // fire group
-    fire_red.w = easingWithRate(fire_red.w, 0, 0.005);
-    fire_red.h = easingWithRate(fire_red.h, 0, 0.005);
-    fire_red.x = GAME_W / 2 - fire_red.w / 2;
-    fire_red.y = GAME_H / 2 - fire_red.h / 2;
-    fire_red.x = Math.floor(fire_red.x);
-    fire_red.y = Math.floor(fire_red.y);
-    fire_yellow.w = fire_red.w / 2;
-    fire_yellow.h = fire_red.h / 2;
-    fire_yellow.x = fire_red.x + fire_red.w / 2 - fire_yellow.w / 2;
-    fire_yellow.y = fire_red.y + fire_red.h / 2 - fire_yellow.h / 2;
 
     // prevent pixelation on movement
     GAME_OBJECTS.forEach((obj) => {
@@ -732,9 +709,6 @@ const update = (dt) => {
 
     updateScreenshake();
 
-    LIGHT_SOURCE.x = fire_red.x + fire_red.w / 2;
-    LIGHT_SOURCE.y = fire_red.y + fire_red.h / 2;
-
     // despawning
     GAME_OBJECTS.forEach((obj) => {
       if (obj.remove) {
@@ -746,11 +720,6 @@ const update = (dt) => {
 
     if (players.length < 1) {
       game_state = "game_over";
-    }
-
-    if (fire_red.w < 4) {
-      game_state = "game_over";
-      game_over_text = "Your fire went out!";
     }
 
     return;
@@ -795,7 +764,7 @@ const objectLightRenderPass = (obj) => {
     obj.y + obj.h
   );
   gradient.addColorStop(0, firstGradientColor);
-  gradient.addColorStop(1 * LIGHT_SOURCE.brightness, firstGradientColor);
+  // gradient.addColorStop(1 * LIGHT_SOURCE.brightness, firstGradientColor);
   gradient.addColorStop(1, secondGradientColor);
 
   // Light shadow

@@ -11,6 +11,7 @@ let light = function (_position, _radius, _angleSpread, _color) {
   this.angleSpread = _angleSpread;
   this.position = _position;
   this.angle = Math.random() * 180;
+  this.brightness = 1;
 };
 let block = function (_position, _w, _h) {
   this.position = _position;
@@ -117,8 +118,8 @@ function shineLight(light, objects) {
 // ************************************
 
 function drawLight(objects, renderMethod = () => {}) {
-//   context.fillStyle = "#000";
-//   context.fillRect(0, 0, 512, 512);
+  //   context.fillStyle = "#000";
+  //   context.fillRect(0, 0, 512, 512);
   angle += 0.6;
 
   for (var i = 0; i < objects.length; i++) {
@@ -155,17 +156,17 @@ for (var i = 0; i < 50; i++) {
   );
 }
 
-for (var i = 0; i < 2; i++) {
-  var r = Math.floor(Math.random() * 256),
-    g = Math.floor(Math.random() * 256),
-    b = Math.floor(Math.random() * 256);
+// for (var i = 0; i < 2; i++) {
+//   var r = Math.floor(Math.random() * 256),
+//     g = Math.floor(Math.random() * 256),
+//     b = Math.floor(Math.random() * 256);
 
-  lights.push(
-    new light(
-      new vector(Math.random() * 512, Math.random() * 512),
-      Math.random() * 200 + 100,
-      60,
-      "rgba(" + r + "," + g + "," + b + ",0.1)"
-    )
-  );
-}
+//   lights.push(
+//     new light(
+//       new vector(Math.random() * 512, Math.random() * 512),
+//       Math.random() * 200 + 100,
+//       60,
+//       "rgba(" + r + "," + g + "," + b + ",0.1)"
+//     )
+//   );
+// }
