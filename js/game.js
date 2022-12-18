@@ -5,9 +5,6 @@
 // TODO: custom controls
 // TODO: sound effects
 
-const GAME_W = 320;
-const GAME_H = 240;
-
 const LIGHT_SOURCE = {
   x: 0,
   y: 0,
@@ -331,38 +328,19 @@ function easingWithRate(x, target, rate, tolerance = 0) {
 
 const move = (object) => {
   // ARROWS
-  INPUTS.ArrowRight
-    ? (object.dx = easingWithRate(object.dx, object.speed, 0.2))
-    : null;
-  INPUTS.ArrowLeft
+  INPUTS.d ? (object.dx = easingWithRate(object.dx, object.speed, 0.2)) : null;
+  INPUTS.a
     ? (object.dx = easingWithRate(object.dx, -1 * object.speed, 0.2))
     : null;
-  INPUTS.ArrowUp
+  INPUTS.w
     ? (object.dy = easingWithRate(object.dy, -1 * object.speed, 0.2))
     : null;
-  INPUTS.ArrowDown
-    ? (object.dy = easingWithRate(object.dy, object.speed, 0.2))
-    : null;
+  INPUTS.s ? (object.dy = easingWithRate(object.dy, object.speed, 0.2)) : null;
 
-  if (
-    !INPUTS.ArrowRight &&
-    !INPUTS.ArrowLeft &&
-    !INPUTS.ArrowDown &&
-    !INPUTS.ArrowUp
-  ) {
+  if (!INPUTS.w && !INPUTS.a && !INPUTS.s && !INPUTS.d) {
     object.dx = easingWithRate(object.dx, 0, 0.2);
     object.dy = easingWithRate(object.dy, 0, 0.2);
   }
-
-  // A/D
-  // INPUTS.d ? (object.dx = easingWithRate(object.dx, object.speed, 0.2)) : null;
-  // INPUTS.a
-  //   ? (object.dx = easingWithRate(object.dx, -1 * object.speed, 0.2))
-  //   : null;
-
-  // if (!INPUTS.d && !INPUTS.a) {
-  //   object.dx = easingWithRate(object.dx, 0, 0.2);
-  // }
 };
 
 const pickDirection = (obj) => {
@@ -836,6 +814,8 @@ const draw = () => {
       // context.fillStyle = "red";
       // context.fillRect(obj.heart.x, obj.heart.y, obj.heart.w, obj.heart.h);
     }
+
+    // stretchLowResCanvasToVisibleCanvas();
   });
 
   // render lighting
