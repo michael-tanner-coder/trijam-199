@@ -736,7 +736,6 @@ const update = (dt) => {
 const objectLightRenderPass = (obj) => {
   // --- LIGHT RENDERING CODE ---
   // TODO: factor in brightness of light
-  // TODO: dynamically place light source
 
   // Get colors for gradients and shadows
   let distance_to_light = Math.ceil(
@@ -877,8 +876,8 @@ const draw = () => {
     context.fillRect(0, GAME_H / 2 - 28, GAME_W, 96);
     context.fillStyle = "yellow";
 
-    let move_text = "AVOID GHOSTS WITH ARROW KEYS";
-    let shoot_text = "GET WOOD TO KEEP THE FIRE GOING";
+    let move_text = "MOVE WITH WASD KEYS";
+    let shoot_text = "CLICK TO SHOOT";
     let start_text = "PRESS ENTER TO START";
     let move_text_width = context.measureText(move_text).width;
     let shoot_text_width = context.measureText(shoot_text).width;
