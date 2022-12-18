@@ -22,7 +22,7 @@ const STATES = {
 };
 var game_state = "in_game";
 
-let game_over_text = "YOU GOT SPOOKED!";
+let game_over_text = "YOU GOT ZOMBIED!";
 
 // GRID PROPS
 const BLOCK_W = 32;
@@ -140,6 +140,7 @@ const TREE_TRUNK = {
   glow: true,
   solid: true,
 };
+
 const TREE_LEAVES = {
   x: GAME_W / 2 - 8,
   y: GAME_H / 2 + 16,
@@ -158,51 +159,36 @@ const TREE_LEAVES = {
   solid: true,
 };
 
-let up_right_tree = JSON.parse(JSON.stringify(TREE_LEAVES));
-let up_right_trunk = JSON.parse(JSON.stringify(TREE_TRUNK));
-up_right_tree.x = GAME_W - 48;
-up_right_tree.y = 16;
-up_right_trunk.x = up_right_tree.x + up_right_tree.w / 2 - up_right_trunk.w / 2;
-up_right_trunk.y = up_right_tree.y + up_right_tree.h;
+const spawnTree = (x, y) => {
+  let tree = JSON.parse(JSON.stringify(TREE_LEAVES));
+  let trunk = JSON.parse(JSON.stringify(TREE_TRUNK));
+  tree.x = x;
+  tree.y = y;
+  trunk.x = tree.x + tree.w / 2 - trunk.w / 2;
+  trunk.y = tree.y + tree.h;
 
-let up_left_tree = JSON.parse(JSON.stringify(TREE_LEAVES));
-let up_left_trunk = JSON.parse(JSON.stringify(TREE_TRUNK));
-up_left_tree.x = 16;
-up_left_tree.y = 16;
-up_left_trunk.x = up_left_tree.x + up_left_tree.w / 2 - up_left_trunk.w / 2;
-up_left_trunk.y = up_left_tree.y + up_left_tree.h;
+  GAME_OBJECTS.push(tree);
+  GAME_OBJECTS.push(trunk);
+};
 
-let down_right_tree = JSON.parse(JSON.stringify(TREE_LEAVES));
-let down_right_trunk = JSON.parse(JSON.stringify(TREE_TRUNK));
-down_right_tree.x = GAME_W - 48;
-down_right_tree.y = GAME_H - 48;
-down_right_trunk.x =
-  down_right_tree.x + down_right_tree.w / 2 - down_right_trunk.w / 2;
-down_right_trunk.y = down_right_tree.y + down_right_tree.h;
+const spawnAllTrees = () => {
+  TREE_LOCATIONS.forEach((pos) => {
+    spawnTree(pos.x, pos.y);
+  });
+};
 
-let down_left_tree = JSON.parse(JSON.stringify(TREE_LEAVES));
-let down_left_trunk = JSON.parse(JSON.stringify(TREE_TRUNK));
-down_left_tree.x = 16;
-down_left_tree.y = GAME_H - 48;
-down_left_trunk.x =
-  down_left_tree.x + down_left_tree.w / 2 - down_left_trunk.w / 2;
-down_left_trunk.y = down_left_tree.y + down_left_tree.h;
+const TREE_LOCATIONS = [
+  { x: GAME_W - 48, y: 16 },
+  { x: GAME_W - 48, y: GAME_H - 48 },
+  { x: 16, y: GAME_H - 48 },
+  { x: 16, y: 16 },
+];
 
 // PLAYERS
 
 let player = JSON.parse(JSON.stringify(PLAYER));
-let GAME_OBJECTS = [
-  player,
-  BLOCK,
-  up_right_tree,
-  up_left_tree,
-  down_right_tree,
-  down_left_tree,
-  up_right_trunk,
-  up_left_trunk,
-  down_right_trunk,
-  down_left_trunk,
-];
+let GAME_OBJECTS = [player, BLOCK];
+spawnAllTrees();
 
 // LIGHTS
 const FLASHLIGHT = new light(
@@ -509,18 +495,8 @@ const resetGame = () => {
   GAME_OBJECTS.length = 0;
 
   player = JSON.parse(JSON.stringify(PLAYER));
-  GAME_OBJECTS = [
-    player,
-    BLOCK,
-    up_right_tree,
-    up_left_tree,
-    down_right_tree,
-    down_left_tree,
-    up_right_trunk,
-    up_left_trunk,
-    down_right_trunk,
-    down_left_trunk,
-  ];
+  GAME_OBJECTS = [player, BLOCK];
+  spawnAllTrees();
 
   FLASHLIGHT.position.x = player.x + player.w / 2;
   FLASHLIGHT.position.y = player.y;
@@ -687,6 +663,8 @@ const update = (dt) => {
 
     // shot group
     shots.forEach((shot) => {
+      trackPosition(shot);
+
       moveInOwnDirection(shot);
 
       ghosts.forEach((ghost) => {
