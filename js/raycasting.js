@@ -102,6 +102,7 @@ function shineLight(light, objects) {
       end = new vector(light.position.x, light.position.y);
 
     findDistRes.block.visible = true;
+    findDistRes.block.lit = true;
     end.x += Math.cos(rads) * findDistRes.rLen;
     end.y += Math.sin(rads) * findDistRes.rLen;
 
@@ -115,21 +116,16 @@ function shineLight(light, objects) {
 }
 // ************************************
 
-function drawLight(objects) {
-  context.fillStyle = "#000";
-  context.fillRect(0, 0, 512, 512);
+function drawLight(objects, renderMethod = () => {}) {
+//   context.fillStyle = "#000";
+//   context.fillRect(0, 0, 512, 512);
   angle += 0.6;
 
   for (var i = 0; i < objects.length; i++) {
     var object = objects[i];
-    if (object.visible) {
-      context.fillStyle = object.color;
-      context.fillRect(object.x, object.y, object.w, object.h);
-      object.visible = false;
-    } else {
-      context.fillStyle = object.color;
-      context.fillRect(object.x, object.y, object.w, object.h);
-    }
+    renderMethod(object);
+    object.lit = false;
+    object.visible = false;
   }
 
   for (var i = 0; i < lights.length; i++) {
@@ -159,17 +155,17 @@ for (var i = 0; i < 50; i++) {
   );
 }
 
-// for (var i = 0; i < 2; i++) {
-//   var r = Math.floor(Math.random() * 256),
-//     g = Math.floor(Math.random() * 256),
-//     b = Math.floor(Math.random() * 256);
+for (var i = 0; i < 2; i++) {
+  var r = Math.floor(Math.random() * 256),
+    g = Math.floor(Math.random() * 256),
+    b = Math.floor(Math.random() * 256);
 
-//   lights.push(
-//     new light(
-//       new vector(Math.random() * 512, Math.random() * 512),
-//       Math.random() * 200 + 100,
-//       60,
-//       "rgba(" + r + "," + g + "," + b + ",0.1)"
-//     )
-//   );
-// }
+  lights.push(
+    new light(
+      new vector(Math.random() * 512, Math.random() * 512),
+      Math.random() * 200 + 100,
+      60,
+      "rgba(" + r + "," + g + "," + b + ",0.1)"
+    )
+  );
+}
