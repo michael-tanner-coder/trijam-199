@@ -20,7 +20,7 @@ const STATES = {
   in_game: "in_game",
   menu: "menu",
 };
-var game_state = "menu";
+var game_state = "in_game";
 
 let game_over_text = "YOU GOT SPOOKED!";
 
@@ -63,7 +63,7 @@ const SHOT = {
   dx: 0,
   dy: -3,
   color: GREEN,
-  speed: 0.1,
+  speed: 2,
   type: "shot",
   top_speed: 1,
   positions: [],
@@ -214,10 +214,11 @@ const FLASHLIGHT = new light(
 lights.push(FLASHLIGHT);
 
 // UTILS
-const shoot = (shooter, projectile) => {
+const shoot = (shooter, projectile, direction = 0) => {
   let new_shot = JSON.parse(JSON.stringify(projectile));
   new_shot.x = shooter.x + shooter.w / 2 - projectile.w / 2;
-  new_shot.y = shooter.y - shooter.h;
+  new_shot.y = shooter.y + shooter.h / 2 - projectile.h / 2;
+  new_shot.direction = direction;
   GAME_OBJECTS.push(new_shot);
 };
 
@@ -495,6 +496,14 @@ window.addEventListener("keyup", function (e) {
     INPUTS[e.key] = false;
   }
 });
+window.addEventListener("mousedown", function (e) {
+  e.preventDefault();
+  if (ammo > 0 && player.shoot_timer <= 0) {
+    shoot(player, SHOT);
+    ammo -= 1;
+    player.shoot_timer = 0;
+  }
+});
 
 const resetGame = () => {
   GAME_OBJECTS.length = 0;
@@ -528,6 +537,7 @@ const update = (dt) => {
   let blocks = GAME_OBJECTS.filter((obj) => obj.type === "block");
   let ghosts = GAME_OBJECTS.filter((obj) => obj.type === "ghost");
   let fire = GAME_OBJECTS.filter((obj) => obj.type === "fire");
+  let shots = GAME_OBJECTS.filter((obj) => obj.type === "shot");
 
   // vfx
   particles.update();
@@ -673,6 +683,11 @@ const update = (dt) => {
     GAME_OBJECTS.forEach((obj) => {
       // obj.x = Math.floor(obj.x);
       // obj.y = Math.floor(obj.y);
+    });
+
+    // shot group
+    shots.forEach((shot) => {
+      moveInOwnDirection(shot);
     });
 
     // spawning

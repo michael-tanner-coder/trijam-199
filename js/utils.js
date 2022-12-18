@@ -66,3 +66,10 @@ function getDistance(x1, y1, x2, y2) {
 function choose(choices) {
   return choices[Math.floor(Math.random() * choices.length)];
 }
+
+function moveInOwnDirection(object) {
+  object.prev_x = object.x;
+  object.prev_y = object.y;
+  object.x += object.speed * Math.cos((object.direction * Math.PI) / 180);
+  object.y += object.speed * Math.sin((object.direction * Math.PI) / 180);
+}

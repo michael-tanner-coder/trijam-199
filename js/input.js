@@ -36,8 +36,6 @@ function mousemoved(evt) {
   console.log(mouseX, mouseY);
 }
 
-function handleMouseClick(evt) {}
-
 function handleMouseRelease(evt) {
   mouseDragging = false;
   dragX = dragY = 0;
