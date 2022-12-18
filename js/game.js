@@ -688,6 +688,13 @@ const update = (dt) => {
     // shot group
     shots.forEach((shot) => {
       moveInOwnDirection(shot);
+
+      ghosts.forEach((ghost) => {
+        if (collisionDetected(shot, ghost)) {
+          ghost.remove = true;
+          shot.remove = true;
+        }
+      });
     });
 
     // spawning
