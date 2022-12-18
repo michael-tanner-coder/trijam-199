@@ -222,6 +222,11 @@ let GAME_OBJECTS = [
   down_left_trunk,
 ];
 
+// LIGHTS
+const LIGHT = new light(new vector(FIRE.x, FIRE.y), 300, 360, "rgba(255,255,60,0.1)");
+lights.push(LIGHT);
+// GAME_OBJECTS.push(LIGHT);
+
 // UTILS
 const shoot = (shooter, projectile) => {
   let new_shot = JSON.parse(JSON.stringify(projectile));
@@ -764,105 +769,108 @@ const draw = () => {
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   // render objects
-  GAME_OBJECTS.forEach((obj) => {
-    // Render trail underneath objects
-    if (obj.has_trail) {
-      drawTrail(obj.positions, obj);
-    }
+  // GAME_OBJECTS.forEach((obj) => {
+  //   // Render trail underneath objects
+  //   if (obj.has_trail) {
+  //     drawTrail(obj.positions, obj);
+  //   }
 
-    // --- LIGHT RENDERING CODE ---
-    // TODO: factor in brightness of light
-    // TODO: dynamically place light source
+  //   // --- LIGHT RENDERING CODE ---
+  //   // TODO: factor in brightness of light
+  //   // TODO: dynamically place light source
 
-    // Get colors for gradients and shadows
-    let distance_to_light = Math.ceil(
-      getDistance(obj.x, obj.y, LIGHT_SOURCE.x, LIGHT_SOURCE.y)
-    );
-    let light_angle =
-      Math.atan2(
-        LIGHT_SOURCE.y - obj.y + obj.h / 2,
-        LIGHT_SOURCE.x - obj.x + obj.w / 2
-      ) *
-      (180 / Math.PI);
+  //   // Get colors for gradients and shadows
+  //   let distance_to_light = Math.ceil(
+  //     getDistance(obj.x, obj.y, LIGHT_SOURCE.x, LIGHT_SOURCE.y)
+  //   );
+  //   let light_angle =
+  //     Math.atan2(
+  //       LIGHT_SOURCE.y - obj.y + obj.h / 2,
+  //       LIGHT_SOURCE.x - obj.x + obj.w / 2
+  //     ) *
+  //     (180 / Math.PI);
 
-    console.log(light_angle);
-    context.fillStyle = obj.color;
-    const firstGradientColor = colorLuminance(obj.color, 0.2);
-    const secondGradientColor = colorLuminance(obj.color, -0.17);
-    const darkColor = colorLuminance(obj.color, 0.1 * -1);
-    const lightColor = colorLuminance(obj.color, 0.15);
+  //   console.log(light_angle);
+  //   context.fillStyle = obj.color;
+  //   const firstGradientColor = colorLuminance(obj.color, 0.2);
+  //   const secondGradientColor = colorLuminance(obj.color, -0.17);
+  //   const darkColor = colorLuminance(obj.color, 0.1 * -1);
+  //   const lightColor = colorLuminance(obj.color, 0.15);
 
-    // Create gradient fill color
-    context.fillStyle = obj.color;
-    console.log(obj.y);
-    var gradient = context.createLinearGradient(
-      obj.x,
-      obj.y,
-      obj.x + obj.w,
-      obj.y + obj.h
-    );
-    gradient.addColorStop(0, firstGradientColor);
-    // gradient.addColorStop(1 * LIGHT_SOURCE.brightness, firstGradientColor);
-    gradient.addColorStop(1, secondGradientColor);
+  //   // Create gradient fill color
+  //   context.fillStyle = obj.color;
+  //   console.log(obj.y);
+  //   var gradient = context.createLinearGradient(
+  //     obj.x,
+  //     obj.y,
+  //     obj.x + obj.w,
+  //     obj.y + obj.h
+  //   );
+  //   gradient.addColorStop(0, firstGradientColor);
+  //   // gradient.addColorStop(1 * LIGHT_SOURCE.brightness, firstGradientColor);
+  //   gradient.addColorStop(1, secondGradientColor);
 
-    // Light shadow
-    if (obj.glow) {
-      context.shadowInset = false;
-      context.shadowOffsetX = -4;
-      context.shadowOffsetY = -4;
-      context.shadowBlur = 60;
-      context.shadowColor = lightColor;
-      roundRect(context, obj.x, obj.y, obj.w, obj.h, 4, true, false);
-    }
+  //   // Light shadow
+  //   if (obj.glow) {
+  //     context.shadowInset = false;
+  //     context.shadowOffsetX = -4;
+  //     context.shadowOffsetY = -4;
+  //     context.shadowBlur = 60;
+  //     context.shadowColor = lightColor;
+  //     roundRect(context, obj.x, obj.y, obj.w, obj.h, 4, true, false);
+  //   }
 
-    // Dark shadow
-    context.rect(-obj.w, -obj.h, obj.h, obj.w);
-    context.shadowInset = false;
+  //   // Dark shadow
+  //   context.rect(-obj.w, -obj.h, obj.h, obj.w);
+  //   context.shadowInset = false;
 
-    // context.shadowOffsetX = 4;
-    // context.shadowOffsetY = 4;
-    context.shadowOffsetX = -4 * Math.cos((light_angle * Math.PI) / 180);
-    context.shadowOffsetY = -4 * Math.sin((light_angle * Math.PI) / 180);
+  //   // context.shadowOffsetX = 4;
+  //   // context.shadowOffsetY = 4;
+  //   context.shadowOffsetX = -4 * Math.cos((light_angle * Math.PI) / 180);
+  //   context.shadowOffsetY = -4 * Math.sin((light_angle * Math.PI) / 180);
 
-    context.shadowBlur = 800 / distance_to_light;
-    context.globalAlpha = 0.5;
-    context.shadowColor = "#000000";
-    context.fillStyle = "#000000";
+  //   context.shadowBlur = 800 / distance_to_light;
+  //   context.globalAlpha = 0.5;
+  //   context.shadowColor = "#000000";
+  //   context.fillStyle = "#000000";
 
-    let shadow_w =
-      obj.w +
-      (obj.w / distance_to_light) * Math.cos((light_angle * Math.PI) / 180);
-    let shadow_h =
-      obj.h +
-      (obj.h / distance_to_light) * Math.sin((light_angle * Math.PI) / 180);
+  //   let shadow_w =
+  //     obj.w +
+  //     (obj.w / distance_to_light) * Math.cos((light_angle * Math.PI) / 180);
+  //   let shadow_h =
+  //     obj.h +
+  //     (obj.h / distance_to_light) * Math.sin((light_angle * Math.PI) / 180);
 
-    roundRect(context, obj.x, obj.y, shadow_w, shadow_h, 4, true, false);
-    context.globalAlpha = 1;
+  //   roundRect(context, obj.x, obj.y, shadow_w, shadow_h, 4, true, false);
+  //   context.globalAlpha = 1;
 
-    // Reset shadow drawing
-    context.shadowColor = "none";
-    context.shadowOffsetX = 0;
-    context.shadowOffsetY = 0;
-    context.shadowBlur = 0;
+  //   // Reset shadow drawing
+  //   context.shadowColor = "none";
+  //   context.shadowOffsetX = 0;
+  //   context.shadowOffsetY = 0;
+  //   context.shadowBlur = 0;
 
-    // Render object
-    context.fillStyle = gradient;
-    roundRect(context, obj.x, obj.y, obj.w, obj.h, 4, true, false);
+  //   // Render object
+  //   context.fillStyle = gradient;
+  //   roundRect(context, obj.x, obj.y, obj.w, obj.h, 4, true, false);
 
-    // --- END NEUMORPHIC RENDERING CODE ---
+  //   // --- END NEUMORPHIC RENDERING CODE ---
 
-    // player-specific rendering
-    if (obj.type === "player") {
-      // i frame flash
-      if (i_frames > 0) {
-        obj.color = i_frames % 2 === 0 ? "#ffffff" : MID_PURPLE;
-      }
+  //   // player-specific rendering
+  //   if (obj.type === "player") {
+  //     // i frame flash
+  //     if (i_frames > 0) {
+  //       obj.color = i_frames % 2 === 0 ? "#ffffff" : MID_PURPLE;
+  //     }
 
-      // heart
-      // context.fillStyle = "red";
-      // context.fillRect(obj.heart.x, obj.heart.y, obj.heart.w, obj.heart.h);
-    }
-  });
+  //     // heart
+  //     // context.fillStyle = "red";
+  //     // context.fillRect(obj.heart.x, obj.heart.y, obj.heart.w, obj.heart.h);
+  //   }
+  // });
+
+  // render lighting
+  drawLight(GAME_OBJECTS);
 
   context.globalAlpha = sun_alpha;
   // context.drawImage(IMAGES["sun_1"], 0, 0);
