@@ -172,9 +172,13 @@ const spawnTree = (x, y) => {
 };
 
 const spawnAllTrees = () => {
-  TREE_LOCATIONS.forEach((pos) => {
-    spawnTree(pos.x, pos.y);
-  });
+  for (let i = 0; i < 5; i++) {
+    let x = Math.random() * GAME_W - 48;
+    let y = Math.random() * GAME_H - 48;
+    if (x < 48) x = 48;
+    if (y < 48) y = 48;
+    spawnTree(x, y);
+  }
 };
 
 const TREE_LOCATIONS = [
