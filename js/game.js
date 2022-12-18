@@ -1,4 +1,13 @@
-// GAME CONCEPT:
+// GAME CONCEPT: survive the night in the zombie woods!
+// Collect ammo + batteries during the day and use them during the night to survive zombie waves
+
+// CORE:
+// TODO: aim with mouse
+// TODO: enemies drop items
+// TODO: deplete flashlight battery and brightness
+// TODO: limit visibility
+// TODO: day + night cycle and waves
+// TODO: game over + show score + reset
 
 // NICE TO HAVE:
 // TODO: start menu
@@ -172,12 +181,27 @@ const spawnTree = (x, y) => {
 };
 
 const spawnAllTrees = () => {
-  for (let i = 0; i < 5; i++) {
-    let x = Math.random() * GAME_W - 48;
-    let y = Math.random() * GAME_H - 48;
+  let new_trees = [];
+  let tree_count = 6;
+  for (let i = 0; i < tree_count; i++) {
+    let too_close = true;
+    let x = 0;
+    let y = 0;
+    while (too_close) {
+      x = Math.random() * GAME_W - 48;
+      y = Math.random() * GAME_H - 48;
+
+      too_close = false;
+      new_trees.forEach((tree) => {
+        if (getDistance(tree.x, tree.y, x, y) < 64) {
+          too_close = true;
+        }
+      });
+    }
     if (x < 48) x = 48;
     if (y < 48) y = 48;
     spawnTree(x, y);
+    new_trees.push({ x, y });
   }
 };
 
@@ -800,6 +824,7 @@ const draw = () => {
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   // render objects
+  // .sort((a, b) => a.y - b.y) y-sorting for rendering
   GAME_OBJECTS.forEach((obj) => {
     // Render trail underneath objects
     if (obj.has_trail) {
